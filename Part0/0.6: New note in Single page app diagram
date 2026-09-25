@@ -1,0 +1,37 @@
+```mermaid
+sequenceDiagram
+    participant browser
+    participant server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa
+    activate server
+    server-->>browser: returned the html document
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    activate server
+    server-->>browser: returned the css file
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+    activate server
+    server-->>browser: returned the javascript file
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    activate server
+    server-->>browser: returned the data in json format
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/favicon.ico
+    activate server
+    server-->>browser:  returned 404 not found
+    deactivate server
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    Note right of browser: content = "this is a new note" date = "2026-09-25T19:49:39.457Z"
+    activate server
+    server-->>browser:  returned 201 Created
+    Note left of server: response = "{"message":"note created"}"
+    deactivate server
+```
