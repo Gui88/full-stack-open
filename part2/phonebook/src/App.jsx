@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Search from "./components/Search";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import personsService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    personsService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -21,22 +21,52 @@ const App = () => {
     person.name.toUpperCase().includes(searchBox.toUpperCase()),
   );
 
+  const deletePerson = (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personsService.deletePerson(person).then((deletedPerson) => {
+        setPersons(persons.filter((person) => person.id !== deletedPerson.id));
+      });
+    }
+  };
+
   const addPerson = (event) => {
     event.preventDefault();
-
     if (newName === "") {
       alert("You must provide a name");
-    } else if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
     } else {
-      const tempPersonObject = {
+      const personObject = {
         name: newName,
         number: newNumber,
       };
 
-      setPersons(persons.concat(tempPersonObject));
-      setNewName("");
-      setNewNumber("");
+      if (persons.some((person) => person.name === newName)) {
+        if (
+          window.confirm(
+            `${newName} is already added to the phonebook, replace the old number with a new one?`,
+          )
+        ) {
+          const existingPerson = persons.find(
+            (person) => person.name === newName,
+          );
+          personsService
+            .update(existingPerson.id, personObject)
+            .then((updatedPerson) => {
+              setPersons(
+                persons.map((person) =>
+                  person.id === existingPerson.id ? updatedPerson : person,
+                ),
+              );
+            });
+          setNewName("");
+          setNewNumber("");
+        }
+      } else {
+        personsService.create(personObject).then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+        });
+        setNewName("");
+        setNewNumber("");
+      }
     }
   };
 
@@ -67,7 +97,7 @@ const App = () => {
         onNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons personsList={personsToShow} />
+      <Persons personsList={personsToShow} onDelete={deletePerson} />
     </div>
   );
 };
