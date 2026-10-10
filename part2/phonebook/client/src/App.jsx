@@ -3,6 +3,7 @@ import Search from "./components/Search";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personsService from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -16,6 +17,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchBox, setSearchBox] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [classOfMessage, setClassOfMessage] = useState("");
 
   const personsToShow = persons.filter((person) =>
     person.name.toUpperCase().includes(searchBox.toUpperCase()),
@@ -23,9 +26,20 @@ const App = () => {
 
   const deletePerson = (person) => {
     if (window.confirm(`Delete ${person.name}?`)) {
-      personsService.deletePerson(person).then((deletedPerson) => {
-        setPersons(persons.filter((person) => person.id !== deletedPerson.id));
-      });
+      personsService
+        .deletePerson(person)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== person.id));
+        })
+        .catch(() => {
+          setClassOfMessage("error_message");
+          setNotificationMessage(
+            `Information of '${person.name}' has already been removed from the server`,
+          );
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
+        });
     }
   };
 
@@ -56,6 +70,20 @@ const App = () => {
                   person.id === existingPerson.id ? updatedPerson : person,
                 ),
               );
+              setClassOfMessage("notification_message");
+              setNotificationMessage(`Updated '${existingPerson.name}'`);
+              setTimeout(() => {
+                setNotificationMessage(null);
+              }, 5000);
+            })
+            .catch(() => {
+              setClassOfMessage("error_message");
+              setNotificationMessage(
+                `Information of '${existingPerson.name}' has already been removed from the server`,
+              );
+              setTimeout(() => {
+                setNotificationMessage(null);
+              }, 5000);
             });
           setNewName("");
           setNewNumber("");
@@ -63,6 +91,11 @@ const App = () => {
       } else {
         personsService.create(personObject).then((returnedPerson) => {
           setPersons(persons.concat(returnedPerson));
+          setClassOfMessage("notification_message");
+          setNotificationMessage(`Created '${returnedPerson.name}'`);
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
         });
         setNewName("");
         setNewNumber("");
@@ -85,6 +118,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification
+        message={notificationMessage}
+        classOfMessage={classOfMessage}
+      />
       <div>
         <Search value={searchBox} onChange={handleSearchChange} />
       </div>
