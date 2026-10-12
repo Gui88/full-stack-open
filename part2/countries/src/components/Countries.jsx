@@ -30,7 +30,7 @@ const Countries = ({ countriesList }) => {
     }, []);
 
     if (!country) {
-      return;
+      return null;
     }
 
     return (
