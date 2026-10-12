@@ -16,14 +16,14 @@
       "id": "3"
     },
     {
-      "name": "test",
-      "number": "123",
-      "id": "HPmbs2jK_OA"
+      "name": "test1",
+      "number": "123 123 123",
+      "id": "U_q5WhcZm3I"
     },
     {
-      "name": "test2",
-      "number": "111",
-      "id": "Umkvv6m0leU"
+      "name": "test 2 ",
+      "number": "123456",
+      "id": "pvArres3fRY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
