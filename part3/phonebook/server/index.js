@@ -9,6 +9,7 @@ app.use(express.static(path.join(__dirname, "dist")));
 const password = process.argv[2];
 
 mongoose.set("strictQuery", false);
+const url = process.env.MONGODB_URI;
 mongoose.connect(url, { family: 4 });
 const Person = require("./models/person");
 
