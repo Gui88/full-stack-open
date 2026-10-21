@@ -12,8 +12,6 @@ mongoose.set("strictQuery", false);
 mongoose.connect(url, { family: 4 });
 const Person = require("./models/person");
 
-const Person = mongoose.model("Person", personSchema);
-
 let persons = [
   {
     id: "1",
