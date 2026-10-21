@@ -1,9 +1,18 @@
 const express = require("express");
+require("dotenv").config();
 var morgan = require("morgan");
+const path = require("path");
+const mongoose = require("mongoose");
 const app = express();
 app.use(express.json());
-const path = require("path");
 app.use(express.static(path.join(__dirname, "dist")));
+const password = process.argv[2];
+
+mongoose.set("strictQuery", false);
+mongoose.connect(url, { family: 4 });
+const Person = require("./models/person");
+
+const Person = mongoose.model("Person", personSchema);
 
 let persons = [
   {
@@ -47,13 +56,15 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = request.params.id;
-  const person = persons.filter((person) => person.id === id);
-  person.length > 0 ? response.json(person) : response.status(404).end();
+  Person.findById(request.params.id).then((person) => {
+    response.json(person);
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -91,12 +102,18 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  person.id = String(Math.floor(Math.random() * 8999999999999999));
-  persons = persons.concat(person);
+  const newPerson = new Person({
+    name: person.name,
+    number: person.number,
+  });
+
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
   response.json(person);
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
