@@ -12,29 +12,8 @@ mongoose.set("strictQuery", false);
 const url = process.env.MONGODB_URI;
 mongoose.connect(url, { family: 4 });
 const Person = require("./models/person");
-
-let persons = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+const { log } = require("console");
+const console = require("console");
 
 morgan.token("http_post", function (req, res) {
   if (req.method === "POST") {
@@ -68,7 +47,7 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
   const idToDelete = request.params.id;
-  const person = persons.find((person) => person.id === idToDelete);
+  const person = Person.find((person) => person.id === idToDelete);
 
   if (!person) {
     return response.status(404).json({
@@ -106,7 +85,7 @@ app.post("/api/persons", (request, response) => {
     number: person.number,
   });
 
-  person.save().then((savedPerson) => {
+  newPerson.save().then((savedPerson) => {
     response.json(savedPerson);
   });
   response.json(person);
