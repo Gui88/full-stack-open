@@ -45,6 +45,7 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
+
     if (newName === "") {
       alert("You must provide a name");
     } else {
